@@ -11,7 +11,14 @@ Signateから提供されたデータセットを使用し、患者の年齢、�
 
 ## 【アプローチ】 
 データの前処理ではそれぞれの特徴量に対数変換を適用しています。
-アリゴリズムは、Random Forest、GradientBoost、XGBoost、CatBoost、LightGBM、SVM、Logistic Regressionを使用しました。
+モデルのトレーニングに使用したアリゴリズム
+- Random Forest
+- GradientBoost
+- XGBoost、CatBoost
+- LightGBM
+- SVM
+- Logistic Regression
+
 アンサンブルモデルを作成しましたが、GradientBoostが一番精度が高いという結果になりました。
 
 ## [結果] 
@@ -23,10 +30,6 @@ Signateから提供されたデータセットを使用し、患者の年齢、�
 ## 【モデルが重視する特徴量】
 
 ![モデルが重視する特徴量](important_features.png)
-
-## 【相互作用の確認】
-
-![相互作用の確認](vif.png)
 
 ## 【クロスバリデーションを設定しグリッドサーチを実行】
 StratifiedKFoldを設定しGridSearchとRandomSearchを試してみました。
