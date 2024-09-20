@@ -16,5 +16,5 @@ Signateから提供されたデータセットを使用し、患者の年齢、�
 ## [結果] 
 モデルの評価結果や精度に関する説明。
 暫定スコアは以下の通りです。
-![暫定スコア](https://github.com/capri7/Liver_Disease_Prediction_for_Beginner/images/score.png)
+![暫定スコア](images/score.png)
 
