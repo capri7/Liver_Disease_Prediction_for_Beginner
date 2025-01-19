@@ -202,18 +202,15 @@ train_data['AG_ratio_clipped'] = train_data['AG_ratio'].clip(lower=lower_bound, 
     train_data['AST_GOT_log'] +
     train_data['T_Bil_log'] -
     train_data['Alb_log']
-)
-
-    ```
+)    ```
 
 ####  **タンパク質とアルブミンの比**
 - **目的**: タンパク質とアルブミンのバランスを評価。
 - **方法**: 二つの数値の比を計算して新しい特徴量として導入。
 - **コード**:
   ```python
- train_data['TP_Alb_ratio'] = train_data['TP_log'] / (train_data['Alb_log'] + 1e-8)  # 0除算を避けるために微小値を加える
+ train_data['TP_Alb_ratio'] = train_data['TP_log'] / (train_data['Alb_log'] + 1e-8)  # 0除算を避けるために微小値を加える ```
 
-    ```
 ---
 
 ### **5. カテゴリ変数の処理**
