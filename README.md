@@ -347,8 +347,58 @@ PCAの適用により、次元削減を実現しつつ、情報の大部分を�
 累積分散比が90%を超える3つの主成分を選択することで、モデルの計算負荷を軽減する効果が期待されます。
 ただし、PCAは特徴量の物理的な意味を失う可能性があるため、モデルの解釈性が重要な場合には注意が必要です。
 
+---
 
+### **9. モデルのトレーニング**
 
+- **使用モデル**: 
+  - Gradient Boosting
+  - XGBoost
+  - LightGBM
+
+#### **Gradient Boostingモデルの特徴量重要度**
+
+以下のグラフは、Gradient Boostingモデルによる特徴量の重要度を可視化したものです。
+
+![Gradient Boostingモデルが重視する特徴量](image/gradient_feature_importance.png)
+
+- **上位の重要な特徴量**: 
+  - ALT_GPT_log
+  - T_Bil_log
+  - AST_GOT_log
+
+#### **考察**
+上位3つの特徴量:
+
+ALT_GPT_log、T_Bil_log、およびAST_GOT_logが肝疾患の有無を予測する上で重要であることが分かりました。
+特に、ALT_GPT_logの重要度が高く、モデルの予測精度に大きな影響を与えています。
+
+他の特徴量:
+
+ALP_logやD_Bil_logも一定の重要度を持ちますが、上位3つに比べるとやや劣ります。
+AgeやGender_Maleの影響は限定的でしたが、モデルのバランスを保つために含めています。
+
+#### **XGBoostingモデルの特徴量重要度**
+
+以下のグラフは、XGBoostモデルによる特徴量の重要度を可視化したものです。
+
+![XGBoostingモデルが重視する特徴量](image/xgboost_feature_importance.png)
+
+- **上位の重要な特徴量**: 
+ - T_Bil_log
+ - AST_GOT_log
+ - D_Bil_log
+
+#### **考察**
+上位3つの特徴量:
+
+T_Bil_log（総ビリルビン）はXGBoostモデルで最も重要とされる特徴量です。
+次に重要な特徴量として、AST_GOT_logとD_Bil_logが続き、肝疾患との関連が強い可能性を示しています。
+
+その他の特徴量:
+
+ALT_GPT_logやAG_ratio_logも一定の重要度を持ちますが、上位3つには劣ります。
+Gender_MaleやAgeの重要度は比較的低いですが、全体的なモデル性能に貢献しています。
 
 
 
