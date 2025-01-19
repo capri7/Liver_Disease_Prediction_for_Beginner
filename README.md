@@ -265,14 +265,16 @@ train_data = pd.concat([train_data, encoded_df], axis=1)
 
 ![最終的な相関行列](image/correlation_matrix_final.png)
 
-#### **削除された特徴量**
+#### **削除した特徴量**
 以下の特徴量を削除:
 - `AST_GOT_log` と `ALT_GPT_log` の間の相関が0.70以上と高かったため、一方を削除しました。
 - `TP_log` と `Alb_log` の積、`TP_Alb_interaction` が目的変数 `disease` と弱い相関を示したため、削除しました。
 
+#### **保持した特徴量**
+- `T_Bil_log`と`D_Bil_log` は非常に高い相関（0.84）を示しますが、これらは肝機能評価において重要な指標であるため、両方ともモデルに保持しました。削除するとモデルの診断能力が低下する可能性があるため、これらの特徴量は維持することを決定しました。
+
 #### **結論**
 削減された特徴量により、モデルの単純化を図りつつ、重要な情報を保持する試みを行いました。この過程で、過学習のリスクを軽減し、モデルの一般化能力が向上することを目指しました。ただし、相関性が高い特徴量でも削除しない方が良い結果になるケースが存在するため、特徴量を削除する前後でモデルの性能変化を詳細に評価しました。
-
 
 #### **継続する特徴量**
 最終的なモデルで使用される特徴量は以下の通りです:
@@ -287,10 +289,39 @@ train_data = pd.concat([train_data, encoded_df], axis=1)
 - `TP_Alb_ratio`
 - `disease` （目的変数）
 
+### **7. データのスケーリング**
 
+- **目的**: 特徴量のスケールを調整し、モデルの収束速度を向上させ、異常値の影響を軽減。
+- **試行した手法**:
+  RobustScaler: 四分位範囲に基づいてスケールを調整し、外れ値の影響を軽減。
+　StandardScaler: 特徴量を平均0、分散1に正規化。
+- **結果**: 両スケーリング方法を試した結果、スコアに大きな差は見られませんでした。
 
+- **スケーラーの保存**:
+  ```python
+  
+ from sklearn.preprocessing import RobustScaler, StandardScaler
+import joblib
 
+# disease列をスケーリング対象から除外
+y_train = train_data['disease']
+X_train = train_data.drop(columns=['disease'])
 
+# RobustScalerの適用
+robust_scaler = RobustScaler()
+X_train_scaled_robust = robust_scaler.fit_transform(X_train)
+
+# スケーラーの保存
+joblib.dump(robust_scaler, 'robust_scaler.pkl')
+
+# StandardScalerの適用
+standard_scaler = StandardScaler()
+X_train_scaled_standard = standard_scaler.fit_transform(X_train)
+
+# スケーラーの保存
+joblib.dump(standard_scaler, 'standard_scaler.pkl')
+
+---
 
 
 
