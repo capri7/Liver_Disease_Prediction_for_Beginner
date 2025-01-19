@@ -553,10 +553,10 @@ params = {
 #### **クラス1の予測確率の分布**　
 学習データとテストデータにおける予測確率の分布を比較。クラス0とクラス1のバランスが適切に保たれているかを確認。
 
-![lightGBM_boosting_probabilities](image/lightGBM_probabilities.png)
+![lightGBM_boosting_probabilities](image/lightgbm_probabilities.png)
 
 #### **考察**　
-Early Stoppingを適用することで過学習を防止しつつ、効率的にモデルを構築できた。
+Early Stoppingを適用することで過学習を防止しつつ、効率的にモデルを構築。
 平均AUCスコアが0.94を超え、モデルの性能が高いことを確認。
 クラス不均衡を考慮した予測確率分布が、学習データとテストデータで適切に一致している。
 
