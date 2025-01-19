@@ -289,18 +289,20 @@ train_data = pd.concat([train_data, encoded_df], axis=1)
 - `TP_Alb_ratio`
 - `disease` （目的変数）
 
+---
+
 ### **7. データのスケーリング**
 
 - **目的**: 特徴量のスケールを調整し、モデルの収束速度を向上させ、異常値の影響を軽減。
 - **試行した手法**:
-  RobustScaler: 四分位範囲に基づいてスケールを調整し、外れ値の影響を軽減。
-　StandardScaler: 特徴量を平均0、分散1に正規化。
+  - RobustScaler: 四分位範囲に基づいてスケールを調整し、外れ値の影響を軽減。
+  - StandardScaler: 特徴量を平均0、分散1に正規化。
 - **結果**: 両スケーリング方法を試した結果、スコアに大きな差は見られませんでした。
 
-- **スケーラーの保存**:
-  ```python
-  
- from sklearn.preprocessing import RobustScaler, StandardScaler
+#### **コード例**
+
+```python
+from sklearn.preprocessing import RobustScaler, StandardScaler
 import joblib
 
 # disease列をスケーリング対象から除外
@@ -321,9 +323,10 @@ X_train_scaled_standard = standard_scaler.fit_transform(X_train)
 # スケーラーの保存
 joblib.dump(standard_scaler, 'standard_scaler.pkl')
 
+```
 ---
 
-
+### **8. CPAの適用**
 
 
 
