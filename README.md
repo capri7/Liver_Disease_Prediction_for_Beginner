@@ -125,17 +125,6 @@ train_data['AG_ratio_clipped'] = train_data['AG_ratio'].clip(lower=lower_bound, 
 
 ```
 
-#### **クリッピング前後の分布**
-
-以下のグラフは、`AG_ratio`のクリッピング前後のデータ分布を比較したものです。
-
-- **左図**: クリッピング前のデータ分布  
-- **右図**: クリッピング後のデータ分布  
-
-![AG_ratioのヒストグラム](image/ag_ratio_cliped.png)
-
----
-
 #### **考察**
 
 - クリッピングの適用により、外れ値を範囲内に収めることができました。
