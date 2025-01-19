@@ -438,6 +438,50 @@ T_Bil_log や D_Bil_log のようにVIFがやや高めの特徴量について�
 
 ---
 
+### **11. モデルのトレーニング**
+
+- **使用したモデル**: Gradient Boosting, XGBoost
+- **ハイパーパラメータチューニング**:
+  - Grid Search
+  - Random Search
+- **クロスバリデーションの工夫**: 
+  - CV手法: StratifiedShuffleSplit、StratifiedKFold
+  - サンプルの不均衡を考慮: サンプルの重みを計算
+
+#### **ROC曲線とAUCスコア**
+
+以下のグラフは、Gradient BoostingモデルのGrid SearchとRandom Searchを使用したトレーニング結果を示しています。
+
+Gradient Boosting (Grid Search):
+
+![Gradient Boosting Grid ROC](image/gb_grid_ROC.png)
+
+Mean Cross-Validation AUC: 0.9441
+Test AUC: 0.9459
+考察: 過学習の兆候は見られず、安定したパフォーマンスを示しました。
+
+Gradient Boosting (Random Search):
+
+![Gradient Boosting Random ROC](image/gb_random_ROC.png)
+
+Mean Cross-Validation AUC: 0.9303
+Test AUC: 0.9766
+考察: Random Searchでも高いパフォーマンスが得られ、予測精度において優位性が確認されました。
+
+#### **Precision-Recall曲線**
+
+Precision-Recall曲線は、不均衡データにおけるモデルの適合性を評価するために使用しました。
+
+Gradient Boosting (Grid Search):
+Precision-Recall曲線は、適切なRecall値を維持しつつ、Precisionが高いレベルで維持されていることを示しています。
+
+![Gradient Boosting grid ROC](image/gb_grid_Precision.png)
+
+#### **考察**
+
+- **CV手法**: StratifiedShuffleSplitやStratifiedKFoldなど、ターゲット変数の不均衡に対応した方法が有効でした。
+- **ハイパーパラメータチューニンググ**: Grid SearchとRandom Searchの両方を試行した結果、性能にはほとんど差がありませんでした。
+- **サンプルの重み付け**: サンプルの重みを計算することで、データ不均衡に対するモデルの頑健性が向上しました。
 
 
 
@@ -447,43 +491,3 @@ T_Bil_log や D_Bil_log のようにVIFがやや高めの特徴量について�
 
 
 
-
-
-
-
-
-
-## 【アプローチ】 
-データの前処理ではそれぞれの特徴量に対数変換を適用しています。
-モデルのトレーニングに使用したアリゴリズム
-- Random Forest
-- GradientBoost
-- XGBoost
-- CatBoost
-- LightGBM
-- SVM
-- Logistic Regression
-
-ベースにGradientBoost、XGBoost、LightBGMを使用し、メタにLogistic Regressionを使用したスタッキングアンサンブルを作成しました。
-
-
-## 【モデルが重視する特徴量】
-特徴量はモデルが重視する特徴量を確認し、選定しました。
-
-![モデルが重視する特徴量](important_features.png)
-
-## 【クロスバリデーションを設定しグリッドサーチを実行】
-StratifiedKFoldを設定しGridSearchとRandomSearchを試してみました。
-グリッドサーチは少し時間がかかりますが、ランダムサーチと比べると比較的高いスコアが出ました。
-
-## [モデルの精度を可視化する】
-### Mean Cross-Validation AUC: 0.9303941785588647
-### Test AUC: 0.9766237402015677
-
-![ROCの確認](roc.png)
-
-## 【成果と学び】
-Mean Cross-Validation AUCとTest AUCの間に大きな開きが見られました。
-パラメータをチューニングして調整しましたが、さらなる調整が必要です。
-今後は、探索的データ分析を強化し、より高度なハイパーパラメータチューニングや異なるタイプのクロスバリデーションを使用して、
-モデルの検証を行いたいと思います。
