@@ -143,47 +143,160 @@ train_data['AG_ratio_clipped'] = train_data['AG_ratio'].clip(lower=lower_bound, 
 
 ---
 
-#### **対数変換後の特徴量選択**
+### **3.3. 特徴量の相関関係確認**
+対数変換後の特徴量選択
 対数変換を適用した後、元の特徴量を削除し、データセットを簡潔化しました。以下の特徴量を残し、目的変数を含めて分析を進めました。
 
-Age
-T_Bil_log
-D_Bil_log
-ALP_log
-ALT_GPT_log
-AST_GOT_log
-TP_log
-Alb_log
-AG_ratio_log
-disease（目的変数）
+- `Age`
+- `T_Bil_log`
+- `D_Bil_log`
+- `ALP_log`
+- `ALT_GPT_log`
+- `AST_GOT_log`
+- `TP_log`
+- `Alb_log`
+- `AG_ratio_log`
+- `disease`（目的変数）
 
+#### **相関行列の可視化**
+以下のヒートマップは、選択された数値特徴量間の相関を可視化したものです。高い相関を持つ特徴量ペアを確認できます。目的変数 `disease` との相関が強い特徴量に注目します。
 
 #### **相関行列の可視化**
 
-以下のヒートマップは、選択された数値特徴量間の相関を可視化したものです。
+以下のヒートマップは、選択された数値特徴量間の相関を可視化したものです。高い相関を持つ特徴量ペアを確認でき、目的変数 `disease` との相関が強い特徴量に注目しています。
 
-![AG_ratioのヒストグラム](image/correlation_matrix.png)
+![相関行列ヒートマップ](image/correlation_matrix.png)
 
-高い相関を持つ特徴量ペアを確認できます。
-目的変数 disease との相関が強い特徴量に注目します。
+#### **考察**
 
-#### **考察**　
-高い相関を持つ特徴量のペア:
-AST_GOT_log と ALT_GPT_log（相関係数：0.70）
-Alb_log と TP_log（相関係数：0.73）
-T_Bil_log と D_Bil_log（相関係数：0.84）
-目的変数 disease との相関が高い特徴量:
-AST_GOT_log（相関係数：0.50）
-T_Bil_log（相関係数：0.47）
+- **高い相関を持つ特徴量のペア:**
+  - `AST_GOT_log` と `ALT_GPT_log`（相関係数：0.70）
+  - `Alb_log` と `TP_log`（相関係数：0.73）
+  - `T_Bil_log` と `D_Bil_log`（相関係数：0.84）
+
+- **目的変数 `disease` との相関が高い特徴量:**
+  - `AST_GOT_log`（相関係数：0.50）
+  - `T_Bil_log`（相関係数：0.47）
 
 #### **結論**
-冗長性の削減: 高い相関を持つ特徴量（例：AST_GOT_log と ALT_GPT_log）は、モデルの単純化を考慮し、削減する余地があります。
 
-重要特徴量の特定: 目的変数との高い相関を持つ特徴量（例：AST_GOT_log, T_Bil_log）は、モデルの性能向上に寄与する可能性が高いため、注目すべきです。
+- **冗長性の削減:** 高い相関を持つ特徴量（例：`AST_GOT_log` と `ALT_GPT_log`）は、モデルの単純化を考慮し、削減する余地があります。
+
+- **重要特徴量の特定:** 目的変数との高い相関を持つ特徴量（例：`AST_GOT_log`, `T_Bil_log`）は、モデルの性能向上に寄与する可能性が高いため、注目すべきです。
+
+---
+
+### **4. 新しい特徴量の導入**
+
+本プロジェクトでは、データの潜在的なパターンをよりよく捉え、予測精度を向上させるために、以下の新しい特徴量を作成しました。
+
+#### **年齢のカテゴリ分け**
+- **目的**: 年齢層に応じた肝疾患のリスク変動を捉える。
+- **方法**: 年齢を5つのカテゴリに分ける。各カテゴリは生理的変化や肝機能への影響を異にするため。
+- **コード**:
+  ```python
+  train_data['Age_bucket'] = pd.cut(train_data['Age'], bins=[0, 20, 40, 60, 80, 100], labels=[1, 2, 3, 4, 5])
+
+  ```
+#### **グロブリン値の計算**
+- **目的**: タンパク質代謝の異常を示すグロブリン値を把握する。
+- **方法**: 総タンパク質（TP_log）からアルブミン（Alb_log）を引いた値をグロブリン値として計算。
+- **コード**:
+  ```python
+  train_data['Globulin'] = train_data['TP_log'] - train_data['Alb_log']
+
+  ```
+
+#### **仮定的な肝機能スコア**
+- **目的**: 複数の肝機能指標を組み合わせて、総合的な肝機能スコアを作成。
+- **方法**: AST、ビリルビン、アルブミンのログ変換値を組み合わせ。
+- **コード**:
+  ```python
+  train_data['Liver_Function_Combined_Score'] = (
+    train_data['AST_GOT_log'] +
+    train_data['T_Bil_log'] -
+    train_data['Alb_log']
+)
+
+  ```
+
+#### **タンパク質とアルブミンの比**
+- **目的**: タンパク質とアルブミンのバランスを評価。
+- **方法**: 二つの数値の比を計算して新しい特徴量として導入。
+- **コード**:
+  ```python
+ train_data['TP_Alb_ratio'] = train_data['TP_log'] / (train_data['Alb_log'] + 1e-8)  # 0除算を避けるために微小値を加える
+
+  ```
+
+---
+
+### **5. カテゴリ変数の処理**
+
+データセット内のカテゴリ変数を処理するため、ワンホットエンコーディングを適用しました。これにより、カテゴリ変数を数値化し、機械学習モデルが扱いやすい形式に変換します。
+
+#### **対象のカテゴリ変数**
+- `Gender`（性別）
+
+#### **エンコーディングの手順**
+1. **OneHotEncoderの設定**: `sparse_output=False`を指定して密な配列を出力し、`handle_unknown='ignore'`で未知のカテゴリに対応。
+2. **カテゴリ変数のエンコード**: `Gender`列をエンコーディングして新たな特徴量を作成。
+3. **エンコード結果の統合**: エンコードされた特徴量を元のデータフレームに統合。
+
+#### **コード例**
+```python
+from sklearn.preprocessing import OneHotEncoder
+import pandas as pd
+
+# ワンホットエンコーディングを適用するカテゴリ変数
+categorical_columns = ['Gender']
+
+# OneHotEncoderのインスタンスを作成
+encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
+
+# カテゴリ変数をエンコード
+encoded_columns = encoder.fit_transform(train_data[categorical_columns])
+
+# エンコードされた列の名前を取得
+encoded_col_names = encoder.get_feature_names_out(categorical_columns)
+
+# エンコードされた列をデータフレームに変換
+encoded_df = pd.DataFrame(encoded_columns, columns=encoded_col_names, index=train_data.index)
+
+# オリジナルのデータフレームからカテゴリ変数を削除し、エンコードされた列を追加
+train_data = train_data.drop(categorical_columns, axis=1)
+train_data = pd.concat([train_data, encoded_df], axis=1)
+
+```
+
+### **6. 特徴量選択の最終確認**
+
+#### **相関行列の再確認**
+特徴量間及び目的変数との相関を再度確認し、以下の相関行列を用いて評価しました。このステップでは、特に高い相関を持つ特徴量を削除することに焦点を当てました。
+
+![最終的な相関行列](image/correlation_matrix_final.png)
+
+#### **削除された特徴量**
+以下の特徴量を削除:
+- `AST_GOT_log` と `ALT_GPT_log` の間の相関が0.70以上と高かったため、一方を削除しました。
+- `TP_log` と `Alb_log` の積、`TP_Alb_interaction` が目的変数 `disease` と弱い相関を示したため、削除しました。
+
+#### **結論**
+削減された特徴量により、モデルの単純化を図りつつ、重要な情報を保持する試みを行いました。この過程で、過学習のリスクを軽減し、モデルの一般化能力が向上することを目指しました。ただし、相関性が高い特徴量でも削除しない方が良い結果になるケースが存在するため、特徴量を削除する前後でモデルの性能変化を詳細に評価しました。
 
 
-
-
+#### **継続する特徴量**
+最終的なモデルで使用される特徴量は以下の通りです:
+- `Age`
+- `T_Bil_log`
+- `D_Bil_log`
+- `ALP_log`
+- `ALT_GPT_log`
+- `Alb_log`
+- `AG_ratio_log`
+- `Gender_Male`
+- `TP_Alb_ratio`
+- `disease` （目的変数）
 
 
 
