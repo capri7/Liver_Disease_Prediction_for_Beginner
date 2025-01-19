@@ -132,7 +132,7 @@ train_data['AG_ratio_clipped'] = train_data['AG_ratio'].clip(lower=lower_bound, 
 - **左図**: クリッピング前のデータ分布  
 - **右図**: クリッピング後のデータ分布  
 
-![AG_ratioのヒストグラム](image/ag_histogram)
+![AG_ratioのヒストグラム](image/ag_histogram.png)
 
 ---
 
