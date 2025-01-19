@@ -477,11 +477,38 @@ Precision-Recall曲線は、適切なRecall値を維持しつつ、Precisionが�
 
 ![Gradient Boosting grid ROC](image/gb_grid_Precision.png)
 
+
+XGBoost (Grid Search):
+
+![XGBoosting Grid ROC](image/xgboost_Grid_ROC.png)
+
+Mean Cross-Validation AUC: 0.9396
+Test AUC: 0.9525
+
+XGBoost (Random Search):
+
+![XGBoosting Random ROC](image/xgboost_Random_ROC.png)
+
+Mean Cross-Validation AUC: 0.8181
+Test AUC: 0.8268
+
 #### **考察**
 
+Gradient Boosting:
+Random Search のテスト AUC スコアが Grid Search より高く、最適なハイパーパラメータに近づいた可能性があります。
+
+XGBoost:
+Grid Search の結果が優れており、Random Search では性能が低下。
+モデル間で AUC スコアに明確な差が見られたため、特定のモデルをターゲットデータに合わせてチューニングする必要性が浮き彫りになりました。
+
+#### **結論**
+
 - **CV手法**: StratifiedShuffleSplitやStratifiedKFoldなど、ターゲット変数の不均衡に対応した方法が有効でした。
-- **ハイパーパラメータチューニンググ**: Grid SearchとRandom Searchの両方を試行した結果、性能にはほとんど差がありませんでした。
+- **ハイパーパラメータチューニンググ**: Grid SearchとRandom Searchの両方を試行した結果、Grid Searchの方が有効でした。
 - **サンプルの重み付け**: サンプルの重みを計算することで、データ不均衡に対するモデルの頑健性が向上しました。
+
+
+
 
 
 
